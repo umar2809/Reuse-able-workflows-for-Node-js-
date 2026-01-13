@@ -1,32 +1,24 @@
-name: Reusable Node.js CI
+name: "Node CI Steps"
+description: "Setup Node, install deps, run tests"
 
-on:
-  workflow_call:
-    inputs:
-      node-version:
-        required: false
-        type: number
-        default: 18
+inputs:
+  node-version:
+    description: "Node.js version"
+    required: false
+    default: "18"
 
-jobs:
-  build-test:
-    runs-on: ubuntu-latest
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
 
-    steps:
-      # Checkout repository
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Install dependencies
+      run: npm install
+      shell: bash
 
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # Install dependencies
-      - name: Install dependencies
-        run: npm install
-
-      # Run tests (optional, if present)
-      - name: Run tests
-        run: npm test --if-present
+    - name: Run tests
+      run: npm test --if-present
+      shell: bash
